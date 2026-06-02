@@ -7,17 +7,22 @@ const PLATFORMS = ['Mercado Livre', 'Shopee', 'Amazon']
 
 function Toast({ message, onDone }: { message: string; onDone: () => void }) {
   const [hiding, setHiding] = useState(false)
-
   useEffect(() => {
     const hide = setTimeout(() => setHiding(true), 2800)
     const remove = setTimeout(onDone, 3200)
     return () => { clearTimeout(hide); clearTimeout(remove) }
   }, [onDone])
-
   return <div className={`toast${hiding ? ' hide' : ''}`}>{message}</div>
 }
 
-const emptyForm = { name: '', image_url: '', affiliate_link: '', platform: 'Mercado Livre', category: '' }
+const emptyForm = {
+  name: '',
+  price: '',
+  image_url: '',
+  affiliate_link: '',
+  platform: 'Mercado Livre',
+  category: '',
+}
 
 export default function AdminPage() {
   const [password, setPassword] = useState('')
@@ -44,14 +49,12 @@ export default function AdminPage() {
         headers: { 'x-admin-password': getPassword() },
       })
       if (res.ok) setProducts(await res.json())
-    } catch {
-      // silently ignore — lista não carregou
-    }
+    } catch { /* silently ignore */ }
   }, [])
 
   useEffect(() => {
     const saved = sessionStorage.getItem('admin_pw')
-    if (saved) { setAutenticado(true); }
+    if (saved) setAutenticado(true)
   }, [])
 
   useEffect(() => {
@@ -78,10 +81,16 @@ export default function AdminPage() {
     e.preventDefault()
     setSalvando(true)
     try {
+      const parsedPrice = form.price ? parseFloat(form.price.replace(',', '.')) : null
+      const payload = {
+        ...form,
+        price: !isNaN(parsedPrice as number) ? parsedPrice : null,
+        price_updated_at: parsedPrice ? new Date().toISOString() : null,
+      }
       const res = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       })
       if (res.ok) {
         setForm(emptyForm)
@@ -91,7 +100,7 @@ export default function AdminPage() {
         const err = await res.json()
         setToast(err.error || 'Erro ao salvar')
       }
-    } catch (err) {
+    } catch {
       setToast('Erro de conexão ao salvar')
     } finally {
       setSalvando(false)
@@ -139,14 +148,14 @@ export default function AdminPage() {
       })
       const data = await res.json()
       if (data.error) { setToast('Não foi possível buscar o produto'); return }
+
       setForm(prev => ({
         ...prev,
-        name: data.name || prev.name,
+        name:      data.name      || prev.name,
         image_url: data.image_url || prev.image_url,
-        platform: data.platform === 'mercadolivre' ? 'Mercado Livre'
-          : data.platform === 'shopee' ? 'Shopee'
-          : data.platform === 'amazon' ? 'Amazon'
-          : prev.platform,
+        price:     data.price != null ? String(data.price) : prev.price,
+        category:  data.category  || prev.category,
+        platform:  data.platform  || prev.platform,
       }))
     } catch {
       setToast('Erro ao buscar informações')
@@ -196,7 +205,7 @@ export default function AdminPage() {
 
           <button
             type="submit"
-            style={{ background: 'linear-gradient(135deg, #7c3aed, #2563eb)', color: '#ffffff', border: 'none', borderRadius: 10, padding: 12, fontWeight: 500, fontSize: 14, cursor: 'pointer', opacity: 1, transition: 'opacity 0.2s' }}
+            style={{ background: 'linear-gradient(135deg, #7c3aed, #2563eb)', color: '#ffffff', border: 'none', borderRadius: 10, padding: 12, fontWeight: 500, fontSize: 14, cursor: 'pointer', transition: 'opacity 0.2s' }}
             onMouseOver={e => (e.currentTarget.style.opacity = '0.9')}
             onMouseOut={e => (e.currentTarget.style.opacity = '1')}
           >
@@ -212,7 +221,6 @@ export default function AdminPage() {
     <main style={{ minHeight: '100vh', padding: '2.5rem 1.25rem', position: 'relative', zIndex: 2 }}>
       <div style={{ maxWidth: 560, margin: '0 auto' }}>
 
-        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
           <h1 style={{ color: '#ffffff', fontSize: 22, fontWeight: 600, margin: 0 }}>Painel Admin</h1>
           <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#f87171', background: 'rgba(239,68,68,0.12)', border: '0.5px solid rgba(239,68,68,0.3)', borderRadius: 6, padding: '3px 8px' }}>
@@ -221,38 +229,12 @@ export default function AdminPage() {
         </div>
 
         {/* Formulário */}
-        <div style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(150,100,255,0.18)', borderRadius: 14, padding: '20px 20px', marginBottom: 28 }}>
+        <div style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(150,100,255,0.18)', borderRadius: 14, padding: '20px', marginBottom: 28 }}>
           <h2 style={{ color: '#ffffff', fontSize: 15, fontWeight: 600, margin: '0 0 16px' }}>Adicionar produto</h2>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <input
-              className="admin-input"
-              placeholder="Nome do produto *"
-              value={form.name}
-              onChange={set('name')}
-              required
-            />
 
-            <select className="admin-input" value={form.platform} onChange={set('platform')}>
-              {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-
-            <input
-              className="admin-input"
-              type="text"
-              placeholder="Categoria (ex: Eletrônicos, Casa, Moda...)"
-              value={form.category}
-              onChange={set('category')}
-            />
-
-            <input
-              className="admin-input"
-              type="text"
-              placeholder="URL da imagem"
-              value={form.image_url}
-              onChange={set('image_url')}
-            />
-
+            {/* Link + Buscar */}
             <div style={{ display: 'flex', gap: 8 }}>
               <input
                 className="admin-input"
@@ -272,6 +254,59 @@ export default function AdminPage() {
                 {buscando ? '...' : '🔍 Buscar'}
               </button>
             </div>
+
+            <input
+              className="admin-input"
+              placeholder="Nome do produto *"
+              value={form.name}
+              onChange={set('name')}
+              required
+            />
+
+            {/* Plataforma + Preço */}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <select className="admin-input" value={form.platform} onChange={set('platform')} style={{ flex: 1 }}>
+                {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <input
+                className="admin-input"
+                type="text"
+                placeholder="Preço (R$)"
+                value={form.price}
+                onChange={set('price')}
+                style={{ width: 120, flexShrink: 0 }}
+              />
+            </div>
+
+            {/* Categoria — preenchida automaticamente pelo scrape, editável */}
+            <div style={{ position: 'relative' }}>
+              <input
+                className="admin-input"
+                type="text"
+                placeholder="Categoria"
+                value={form.category}
+                onChange={set('category')}
+              />
+              {form.category && (
+                <span style={{
+                  position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+                  fontSize: 10, fontWeight: 600, color: '#a78bfa',
+                  background: 'rgba(124,58,237,0.2)', border: '0.5px solid rgba(124,58,237,0.35)',
+                  borderRadius: 20, padding: '2px 8px', pointerEvents: 'none',
+                }}>
+                  detectado
+                </span>
+              )}
+            </div>
+
+            <input
+              className="admin-input"
+              type="text"
+              placeholder="URL da imagem"
+              value={form.image_url}
+              onChange={set('image_url')}
+            />
+
             {form.image_url && (
               <img src={form.image_url} alt="Preview" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '0.5px solid rgba(150,100,255,0.2)' }} />
             )}
@@ -288,7 +323,7 @@ export default function AdminPage() {
           </form>
         </div>
 
-        {/* Lista de produtos */}
+        {/* Lista */}
         <div>
           <h2 style={{ color: '#ffffff', fontSize: 15, fontWeight: 600, margin: '0 0 12px' }}>
             Produtos cadastrados <span style={{ color: 'rgba(167,139,250,0.6)', fontWeight: 400, fontSize: 13 }}>({products.length})</span>
@@ -307,21 +342,15 @@ export default function AdminPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ color: '#ffffff', fontSize: 13, fontWeight: 500, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</p>
                     <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, margin: '2px 0 0' }}>
-                      {p.platform}
+                      {p.platform}{p.category ? ` · ${p.category}` : ''}{p.price ? ` · R$ ${p.price.toFixed(2).replace('.', ',')}` : ''}
                     </p>
                   </div>
 
-                  {/* Toggle ativo */}
                   <label className="toggle" title={p.active ? 'Ativo' : 'Inativo'}>
-                    <input
-                      type="checkbox"
-                      checked={p.active}
-                      onChange={e => handleToggle(p.id, e.target.checked)}
-                    />
+                    <input type="checkbox" checked={p.active} onChange={e => handleToggle(p.id, e.target.checked)} />
                     <span className="toggle-slider" />
                   </label>
 
-                  {/* Lixeira */}
                   <button
                     onClick={() => handleDelete(p.id)}
                     title="Remover produto"
