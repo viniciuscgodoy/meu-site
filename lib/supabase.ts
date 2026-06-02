@@ -9,22 +9,13 @@ export function createServiceClient() {
   return createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 }
 
-export type Produto = {
-  id: number
-  titulo: string
-  imagem_url: string
-  preco: string | null
-  link_afiliado: string
-  plataforma: string
-  ativo: boolean
+export type Product = {
+  id: string
+  name: string
+  price: number | null
+  image_url: string | null
+  affiliate_link: string
+  platform: 'Mercado Livre' | 'Shopee' | 'Amazon' | string
+  active: boolean
   created_at: string
-}
-
-export type LinkBio = {
-  id: number
-  titulo: string
-  url: string
-  icone: string
-  ordem: number
-  ativo: boolean
 }
