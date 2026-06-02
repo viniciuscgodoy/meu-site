@@ -38,24 +38,24 @@ export async function POST(req: NextRequest) {
       return match ? match[1].trim() : ''
     }
 
-    const titulo = getMeta('og:title') || getMetaName('title') || getTitleTag()
-    const imagem = getMeta('og:image') || getMetaName('thumbnail')
-    const descricao = getMeta('og:description') || getMetaName('description')
+    const name = getMeta('og:title') || getMetaName('title') || getTitleTag()
+    const image_url = getMeta('og:image') || getMetaName('thumbnail')
+    const description = getMeta('og:description') || getMetaName('description')
 
-    let preco = ''
-    const precoMatch =
+    let price = ''
+    const priceMatch =
       html.match(/["']price["'][^>]*>(R\$\s*[\d.,]+)/i) ||
       html.match(/(R\$\s*[\d.,]+)/i)
-    if (precoMatch) preco = precoMatch[1].trim()
+    if (priceMatch) price = priceMatch[1].trim()
 
-    let plataforma = 'outro'
-    if (url.includes('mercadolivre') || url.includes('mercadolibre')) plataforma = 'mercadolivre'
-    else if (url.includes('shopee')) plataforma = 'shopee'
-    else if (url.includes('amazon')) plataforma = 'amazon'
-    else if (url.includes('magalu') || url.includes('magazineluiza')) plataforma = 'magalu'
+    let platform = 'other'
+    if (url.includes('mercadolivre') || url.includes('mercadolibre')) platform = 'mercadolivre'
+    else if (url.includes('shopee')) platform = 'shopee'
+    else if (url.includes('amazon')) platform = 'amazon'
+    else if (url.includes('magalu') || url.includes('magazineluiza')) platform = 'magalu'
 
-    return NextResponse.json({ titulo, imagem, descricao, preco, plataforma })
-  } catch (err) {
+    return NextResponse.json({ name, image_url, description, price, platform })
+  } catch {
     return NextResponse.json({ error: 'Não foi possível obter informações do produto' }, { status: 500 })
   }
 }

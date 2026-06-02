@@ -2,8 +2,8 @@ import Link from 'next/link'
 
 const projetos = [
   {
-    titulo: 'Dashboard SMS/GIO - Petrobras',
-    descricao: 'Dashboard de indicadores de Saúde, Meio Ambiente e Segurança para análise gerencial.',
+    title: 'Dashboard SMS/GIO - Petrobras',
+    description: 'Dashboard de indicadores de Saúde, Meio Ambiente e Segurança para análise gerencial.',
     tags: ['Power BI', 'SQL', 'Petrobras'],
     status: 'Em andamento',
   },
@@ -33,7 +33,7 @@ export default function PortfolioPage() {
             <a href="mailto:vigodoy.contato@gmail.com" className="text-xs px-4 py-2 rounded-full text-white transition-colors hover:opacity-80" style={{ background: 'rgba(255,255,255,0.1)' }}>
               ✉️ Contato
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-xs px-4 py-2 rounded-full text-white transition-colors hover:opacity-80" style={{ background: 'rgba(255,255,255,0.1)' }}>
+            <a href="https://www.youtube.com/@oviniciusgodoy" target="_blank" rel="noopener noreferrer" className="text-xs px-4 py-2 rounded-full text-white transition-colors hover:opacity-80" style={{ background: 'rgba(255,255,255,0.1)' }}>
               ▶️ YouTube
             </a>
           </div>
@@ -64,14 +64,14 @@ export default function PortfolioPage() {
           ) : (
             <div className="flex flex-col gap-4">
               {projetos.map((projeto) => (
-                <div key={projeto.titulo} className="p-5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div key={projeto.title} className="p-5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-white font-semibold">{projeto.titulo}</h3>
+                    <h3 className="text-white font-semibold">{projeto.title}</h3>
                     <span className="text-xs px-2 py-1 rounded-full text-orange-400 whitespace-nowrap" style={{ background: 'rgba(249,115,22,0.1)' }}>
                       {projeto.status}
                     </span>
                   </div>
-                  <p className="text-gray-400 text-sm mt-2">{projeto.descricao}</p>
+                  <p className="text-gray-400 text-sm mt-2">{projeto.description}</p>
                   <div className="flex flex-wrap gap-2 mt-3">
                     {projeto.tags.map((tag) => (
                       <span key={tag} className="text-xs px-2 py-1 rounded-lg text-gray-400" style={{ background: 'rgba(255,255,255,0.06)' }}>

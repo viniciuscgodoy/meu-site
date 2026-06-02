@@ -141,11 +141,11 @@ export default function AdminPage() {
       if (data.error) { setToast('Não foi possível buscar o produto'); return }
       setForm(prev => ({
         ...prev,
-        name: data.titulo || prev.name,
-        image_url: data.imagem || prev.image_url,
-        platform: data.plataforma === 'mercadolivre' ? 'Mercado Livre'
-          : data.plataforma === 'shopee' ? 'Shopee'
-          : data.plataforma === 'amazon' ? 'Amazon'
+        name: data.name || prev.name,
+        image_url: data.image_url || prev.image_url,
+        platform: data.platform === 'mercadolivre' ? 'Mercado Livre'
+          : data.platform === 'shopee' ? 'Shopee'
+          : data.platform === 'amazon' ? 'Amazon'
           : prev.platform,
       }))
     } catch {
