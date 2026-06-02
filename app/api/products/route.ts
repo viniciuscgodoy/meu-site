@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { name, image_url, affiliate_link, platform } = body
+  const { name, image_url, affiliate_link, platform, category } = body
 
   if (!name || !affiliate_link) {
     return NextResponse.json({ error: 'Nome e link de afiliado são obrigatórios' }, { status: 400 })
@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
       image_url: image_url || null,
       affiliate_link,
       platform: platform || 'Mercado Livre',
+      category: category || null,
       active: true,
     })
     .select()

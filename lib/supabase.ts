@@ -16,6 +16,8 @@ export type Product = {
   image_url: string | null
   affiliate_link: string
   platform: 'Mercado Livre' | 'Shopee' | 'Amazon' | string
+  category: string | null
   active: boolean
   created_at: string
+  price_updated_at: string | null
 }

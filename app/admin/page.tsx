@@ -17,7 +17,7 @@ function Toast({ message, onDone }: { message: string; onDone: () => void }) {
   return <div className={`toast${hiding ? ' hide' : ''}`}>{message}</div>
 }
 
-const emptyForm = { name: '', image_url: '', affiliate_link: '', platform: 'Mercado Livre' }
+const emptyForm = { name: '', image_url: '', affiliate_link: '', platform: 'Mercado Livre', category: '' }
 
 export default function AdminPage() {
   const [password, setPassword] = useState('')
@@ -236,6 +236,14 @@ export default function AdminPage() {
             <select className="admin-input" value={form.platform} onChange={set('platform')}>
               {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
+
+            <input
+              className="admin-input"
+              type="text"
+              placeholder="Categoria (ex: Eletrônicos, Casa, Moda...)"
+              value={form.category}
+              onChange={set('category')}
+            />
 
             <input
               className="admin-input"
