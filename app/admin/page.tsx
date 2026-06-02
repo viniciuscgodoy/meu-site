@@ -30,17 +30,23 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [toast, setToast] = useState('')
 
-  const getPassword = () =>
-    (sessionStorage.getItem('admin_pw') ?? '')
-      .replace(/[﻿​ ]/g, '')
-      .replace(/[^\x20-\x7E]/g, '')
-      .trim()
+  const getPassword = () => {
+    const raw = sessionStorage.getItem('admin_pw') ?? ''
+    return raw.split('').filter(c => {
+      const code = c.charCodeAt(0)
+      return code >= 32 && code <= 126
+    }).join('').trim()
+  }
 
   const fetchProducts = useCallback(async () => {
-    const res = await fetch('/api/products', {
-      headers: { 'x-admin-password': getPassword() },
-    })
-    if (res.ok) setProducts(await res.json())
+    try {
+      const res = await fetch('/api/products', {
+        headers: { 'x-admin-password': getPassword() },
+      })
+      if (res.ok) setProducts(await res.json())
+    } catch {
+      // silently ignore — lista não carregou
+    }
   }, [])
 
   useEffect(() => {
@@ -61,7 +67,7 @@ export default function AdminPage() {
       body: JSON.stringify({ password }),
     })
     if (res.ok) {
-      sessionStorage.setItem('admin_pw', password.trim())
+      sessionStorage.setItem('admin_pw', password.split('').filter(c => { const n = c.charCodeAt(0); return n >= 32 && n <= 126 }).join('').trim())
       setAutenticado(true)
     } else {
       setAuthError('Senha incorreta')
@@ -85,28 +91,38 @@ export default function AdminPage() {
         const err = await res.json()
         setToast(err.error || 'Erro ao salvar')
       }
+    } catch (err) {
+      setToast('Erro de conexão ao salvar')
     } finally {
       setSalvando(false)
     }
   }
 
   async function handleToggle(id: string, active: boolean) {
-    await fetch('/api/products', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
-      body: JSON.stringify({ id, active }),
-    })
-    fetchProducts()
+    try {
+      await fetch('/api/products', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+        body: JSON.stringify({ id, active }),
+      })
+      fetchProducts()
+    } catch {
+      setToast('Erro ao atualizar produto')
+    }
   }
 
   async function handleDelete(id: string) {
     if (!confirm('Remover este produto permanentemente?')) return
-    await fetch('/api/products', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
-      body: JSON.stringify({ id }),
-    })
-    fetchProducts()
+    try {
+      await fetch('/api/products', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+        body: JSON.stringify({ id }),
+      })
+      fetchProducts()
+    } catch {
+      setToast('Erro ao remover produto')
+    }
   }
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -223,7 +239,7 @@ export default function AdminPage() {
 
             <input
               className="admin-input"
-              type="url"
+              type="text"
               placeholder="URL da imagem"
               value={form.image_url}
               onChange={set('image_url')}
