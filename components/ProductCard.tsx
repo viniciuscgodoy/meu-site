@@ -1,56 +1,102 @@
 import Image from 'next/image'
 import type { Product } from '@/lib/supabase'
 
-function Placeholder() {
-  return (
-    <div style={{ height: 120, background: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.4)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-      </svg>
-    </div>
-  )
+const PLATFORM_COLORS: Record<string, string> = {
+  'Mercado Livre': 'rgba(234,179,8,0.15)',
+  'Shopee':        'rgba(234,88,12,0.15)',
+  'Amazon':        'rgba(251,191,36,0.12)',
+}
+const PLATFORM_TEXT: Record<string, string> = {
+  'Mercado Livre': '#eab308',
+  'Shopee':        '#fb923c',
+  'Amazon':        '#fbbf24',
+}
+
+function isPriceStale(dateStr: string | null): boolean {
+  if (!dateStr) return false
+  return Date.now() - new Date(dateStr).getTime() > 7 * 24 * 60 * 60 * 1000
 }
 
 export default function ProductCard({ product }: { product: Product }) {
+  const stale = isPriceStale(product.price_updated_at ?? null)
+  const platBg   = PLATFORM_COLORS[product.platform] ?? 'rgba(124,58,237,0.12)'
+  const platText = PLATFORM_TEXT[product.platform]  ?? '#a78bfa'
+
   return (
-    <div className="product-card">
-      {product.image_url ? (
-        <div style={{ position: 'relative', height: 120, flexShrink: 0 }}>
+    <div className="product-card-v2">
+      {/* Área da imagem */}
+      <div className="product-img-wrap" style={{ position: 'relative', flexShrink: 0, overflow: 'hidden' }}>
+        {product.image_url ? (
           <Image
             src={product.image_url}
             alt={product.name}
             fill
             style={{ objectFit: 'cover' }}
-            sizes="(max-width: 768px) 50vw, 33vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
-        </div>
-      ) : (
-        <Placeholder />
-      )}
+        ) : (
+          <div style={{ width: '100%', height: '100%', background: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>
+            🛍️
+          </div>
+        )}
 
+        {/* Badge categoria — top left */}
+        {product.category && (
+          <span style={{
+            position: 'absolute', top: 8, left: 8,
+            background: 'rgba(8,6,15,0.7)', backdropFilter: 'blur(8px)',
+            border: '0.5px solid rgba(150,100,255,0.2)',
+            borderRadius: 6, padding: '2px 6px',
+            color: 'rgba(255,255,255,0.6)', fontSize: 10,
+            lineHeight: 1.4,
+          }}>
+            {product.category}
+          </span>
+        )}
+
+        {/* Badge preço — top right */}
+        {product.price != null && (
+          <span style={{
+            position: 'absolute', top: 8, right: 8,
+            background: 'rgba(8,6,15,0.85)', backdropFilter: 'blur(8px)',
+            border: '0.5px solid rgba(167,139,250,0.3)',
+            borderRadius: 8, padding: '3px 8px',
+            color: '#a78bfa', fontWeight: 600, fontSize: 12,
+            lineHeight: 1.4,
+          }}>
+            R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
+        )}
+      </div>
+
+      {/* Corpo */}
       <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-        <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, lineHeight: 1.4, margin: 0 }}>
+        <p className="product-name-clamp" style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, lineHeight: 1.4, margin: 0 }}>
           {product.name}
         </p>
 
         <span style={{
-          fontSize: 10,
-          color: '#a78bfa',
-          background: 'rgba(124,58,237,0.15)',
-          border: '0.5px solid rgba(124,58,237,0.3)',
-          borderRadius: 20,
-          padding: '2px 8px',
-          alignSelf: 'flex-start',
-          whiteSpace: 'nowrap',
+          fontSize: 10, fontWeight: 500,
+          color: platText, background: platBg,
+          border: `0.5px solid ${platText}40`,
+          borderRadius: 20, padding: '2px 8px',
+          alignSelf: 'flex-start', whiteSpace: 'nowrap',
         }}>
           {product.platform}
         </span>
+
+        {/* Aviso de preço desatualizado */}
+        {stale && product.price != null && (
+          <span style={{ fontSize: 10, color: '#fbbf24' }}>
+            ⚠️ preço pode ter mudado
+          </span>
+        )}
 
         <a
           href={product.affiliate_link}
           target="_blank"
           rel="noopener noreferrer"
-          className="product-btn"
+          className="product-btn-v2"
           style={{ marginTop: 'auto' }}
         >
           Ver oferta →
