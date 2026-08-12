@@ -73,14 +73,14 @@ export default async function ProdutoPage(
         </Link>
 
         <div style={{
-          background: 'rgba(255,255,255,0.95)',
+          background: 'rgba(255,255,255,0.04)',
+          border: '0.5px solid rgba(150,100,255,0.18)',
           borderRadius: 16,
           padding: 24,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: 16,
-          boxShadow: '0 8px 40px rgba(0,0,0,0.35)',
         }}>
 
           {product.image_url ? (
@@ -95,16 +95,16 @@ export default async function ProdutoPage(
               />
             </div>
           ) : (
-            <div style={{ width: 200, height: 200, borderRadius: 12, background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>
+            <div style={{ width: 200, height: 200, borderRadius: 12, background: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>
               🛍️
             </div>
           )}
 
-          <h1 style={{ color: '#111827', fontSize: 17, fontWeight: 600, lineHeight: 1.4, margin: 0, textAlign: 'center' }}>
+          <h1 style={{ color: '#ffffff', fontSize: 17, fontWeight: 600, lineHeight: 1.4, margin: 0, textAlign: 'center' }}>
             {product.name}
           </h1>
 
-          <p style={{ color: '#6b7280', fontSize: 13, lineHeight: 1.5, margin: 0, textAlign: 'center' }}>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.5, margin: 0, textAlign: 'center' }}>
             Você está em um ambiente de afiliados. Ao continuar, você será redirecionado para a loja parceira — o preço final e a disponibilidade são definidos por ela.
           </p>
 
@@ -152,7 +152,7 @@ export default async function ProdutoPage(
             </a>
           )}
 
-          <p style={{ color: '#9ca3af', fontSize: 11, margin: 0, textAlign: 'center' }}>
+          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, margin: 0, textAlign: 'center' }}>
             Redirecionamento via oviniciusgodoy.vercel.app
           </p>
 

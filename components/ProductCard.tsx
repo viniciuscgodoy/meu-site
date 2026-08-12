@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@/lib/supabase'
+import { platformColors } from '@/lib/tokens'
 
 const PLATFORM_COLORS: Record<string, string> = {
   'Mercado Livre': 'rgba(234,179,8,0.15)',
@@ -16,6 +17,9 @@ const PLATFORM_TEXT: Record<string, string> = {
 export default function ProductCard({ product }: { product: Product }) {
   const platBg   = PLATFORM_COLORS[product.platform] ?? 'rgba(124,58,237,0.12)'
   const platText = PLATFORM_TEXT[product.platform]  ?? '#a78bfa'
+
+  const hasChoice = Boolean(product.secondary_platform && product.secondary_link)
+  const cta = platformColors[product.platform] ?? { bg: '#7c3aed', text: '#ffffff' }
 
   return (
     <div className="product-card-v2">
@@ -48,7 +52,6 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.category}
           </span>
         )}
-
       </div>
 
       {/* Corpo */}
@@ -67,13 +70,25 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.platform}
         </span>
 
-        <Link
-          href={`/produto/${product.slug || product.id}`}
-          className="product-btn-v2"
-          style={{ marginTop: 'auto' }}
-        >
-          Ver oferta →
-        </Link>
+        {hasChoice ? (
+          <Link
+            href={`/produto/${product.slug || product.id}`}
+            className="product-btn-v2"
+            style={{ marginTop: 'auto', background: cta.bg, color: cta.text }}
+          >
+            Ver oferta →
+          </Link>
+        ) : (
+          <a
+            href={product.affiliate_link}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="product-btn-v2"
+            style={{ marginTop: 'auto', background: cta.bg, color: cta.text }}
+          >
+            Ver oferta →
+          </a>
+        )}
       </div>
     </div>
   )
