@@ -20,3 +20,17 @@ export const tokens = {
     textMuted: 'rgba(255,255,255,0.28)',
   },
 }
+
+export const lightTheme = {
+  bg: '#F7F6FB',
+  cardBg: '#FFFFFF',
+  cardBorder: 'rgba(17,17,17,0.06)',
+  cardShadow: '0 1px 3px rgba(17,17,17,0.06)',
+  cardShadowHover: '0 10px 28px rgba(124,58,237,0.14)',
+  textPrimary: '#1A1523',
+  textSecondary: '#6B6675',
+  textMuted: '#9B96A8',
+  accent: '#7C3AED',
+  accentBg: '#EDE6FE',
+  accentBorder: '#C9B8FA',
+}

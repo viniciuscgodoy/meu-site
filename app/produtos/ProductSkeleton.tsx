@@ -8,13 +8,13 @@ export default function ProductSkeleton() {
         }
         .skeleton-pulse {
           animation: skeletonPulse 1.5s ease-in-out infinite;
-          background: rgba(124,58,237,0.15);
+          background: #ECE9F3;
           border-radius: 6px;
         }
       `}</style>
       <div style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: '0.5px solid rgba(150,100,255,0.18)',
+        background: '#FFFFFF',
+        border: '1px solid rgba(17,17,17,0.06)',
         borderRadius: 14,
         overflow: 'hidden',
         display: 'flex',

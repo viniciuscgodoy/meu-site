@@ -34,7 +34,7 @@ export default function ProductCard({ product }: { product: Product }) {
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
         ) : (
-          <div style={{ width: '100%', height: '100%', background: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>
+          <div style={{ width: '100%', height: '100%', background: '#EFEDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>
             🛍️
           </div>
         )}
@@ -43,10 +43,10 @@ export default function ProductCard({ product }: { product: Product }) {
         {product.category && (
           <span style={{
             position: 'absolute', top: 8, left: 8,
-            background: 'rgba(8,6,15,0.7)', backdropFilter: 'blur(8px)',
-            border: '0.5px solid rgba(150,100,255,0.2)',
+            background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(17,17,17,0.08)',
             borderRadius: 6, padding: '2px 6px',
-            color: 'rgba(255,255,255,0.6)', fontSize: 10,
+            color: '#4B5563', fontSize: 10,
             lineHeight: 1.4,
           }}>
             {product.category}
@@ -56,7 +56,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* Corpo */}
       <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-        <p className="product-name-clamp" style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, lineHeight: 1.4, margin: 0 }}>
+        <p className="product-name-clamp" style={{ fontSize: 13, lineHeight: 1.4, margin: 0 }}>
           {product.name}
         </p>
 

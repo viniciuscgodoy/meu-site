@@ -23,9 +23,9 @@ function FilterBtn({ label, active, onClick }: { label: string; active: boolean;
         fontWeight: 500,
         whiteSpace: 'nowrap',
         cursor: 'pointer',
-        border: active ? '0.5px solid rgba(167,139,250,0.5)' : '0.5px solid rgba(150,100,255,0.15)',
-        background: active ? 'rgba(124,58,237,0.25)' : 'rgba(255,255,255,0.04)',
-        color: active ? '#a78bfa' : 'rgba(255,255,255,0.45)',
+        border: active ? '1px solid #C9B8FA' : '1px solid transparent',
+        background: active ? '#EDE6FE' : '#EFEDF5',
+        color: active ? '#7C3AED' : '#6B6675',
         transition: 'background 0.2s, border-color 0.2s, color 0.2s',
         flexShrink: 0,
       }}
@@ -105,8 +105,9 @@ export default function ProdutosClient() {
           .filter-row { flex-wrap: wrap; overflow-x: visible; }
         }
         .product-card-v2 {
-          background: rgba(255,255,255,0.04);
-          border: 0.5px solid rgba(150,100,255,0.18);
+          background: #FFFFFF;
+          border: 1px solid rgba(17,17,17,0.06);
+          box-shadow: 0 1px 3px rgba(17,17,17,0.06);
           border-radius: 14px;
           overflow: hidden;
           display: flex;
@@ -117,8 +118,8 @@ export default function ProdutosClient() {
         }
         .product-card-v2:hover {
           transform: translateY(-3px);
-          border-color: rgba(167,139,250,0.45);
-          box-shadow: 0 8px 32px rgba(124,58,237,0.15);
+          border-color: #C9B8FA;
+          box-shadow: 0 10px 28px rgba(124,58,237,0.14);
         }
         .product-card-v2:active { transform: scale(0.97); }
         .product-img-wrap { height: 160px; }
@@ -128,6 +129,7 @@ export default function ProdutosClient() {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+          color: #1A1523;
         }
         .product-btn-v2 {
           background: linear-gradient(135deg, rgba(124,58,237,0.4), rgba(37,99,235,0.3));
@@ -154,23 +156,23 @@ export default function ProdutosClient() {
 
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <Link href="/" style={{ color: 'rgba(167,139,250,0.7)', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
+        <Link href="/" style={{ color: '#7C3AED', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginBottom: 16 }}>
           ← Voltar
         </Link>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <div>
-            <h1 style={{ color: '#ffffff', fontSize: 22, fontWeight: 600, margin: 0 }}>
+            <h1 style={{ color: '#1A1523', fontSize: 22, fontWeight: 600, margin: 0 }}>
               Produtos em Promoção 🛍️
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, marginTop: 6, marginBottom: 0 }}>
+            <p style={{ color: '#6B6675', fontSize: 13, marginTop: 6, marginBottom: 0 }}>
               Seleção com os melhores produtos e links de afiliado
             </p>
           </div>
           {!loading && (
             <span style={{
-              background: 'rgba(124,58,237,0.1)',
-              border: '0.5px solid rgba(124,58,237,0.2)',
-              color: '#a78bfa',
+              background: '#EDE6FE',
+              border: '1px solid #C9B8FA',
+              color: '#7C3AED',
               borderRadius: 20,
               padding: '4px 12px',
               fontSize: 12,
@@ -237,10 +239,10 @@ export default function ProdutosClient() {
         /* Estado vazio */
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, fontWeight: 500, margin: '0 0 8px' }}>
+          <p style={{ color: '#1A1523', fontSize: 16, fontWeight: 500, margin: '0 0 8px' }}>
             Nenhum produto encontrado
           </p>
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: '0 0 24px' }}>
+          <p style={{ color: '#6B6675', fontSize: 13, margin: '0 0 24px' }}>
             Tente outro filtro ou volte em breve
           </p>
           <button
@@ -252,11 +254,11 @@ export default function ProdutosClient() {
               })
             }}
             style={{
-              background: 'rgba(124,58,237,0.2)',
-              border: '0.5px solid rgba(124,58,237,0.4)',
+              background: '#EDE6FE',
+              border: '1px solid #C9B8FA',
               borderRadius: 20,
               padding: '8px 20px',
-              color: '#a78bfa',
+              color: '#7C3AED',
               fontSize: 13,
               fontWeight: 500,
               cursor: 'pointer',

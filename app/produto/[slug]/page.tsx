@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
-import { platformColors } from '@/lib/tokens'
+import { platformColors, lightTheme } from '@/lib/tokens'
 import type { Product } from '@/lib/supabase'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -63,18 +63,20 @@ export default async function ProdutoPage(
 
   return (
     <main style={{ minHeight: '100vh', padding: '2.5rem 1.25rem', position: 'relative', zIndex: 2 }}>
-      <div style={{ maxWidth: 480, margin: '0 auto' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, background: lightTheme.bg }} />
+      <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', zIndex: 2 }}>
 
         <Link
           href="/produtos"
-          style={{ color: 'rgba(167,139,250,0.7)', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginBottom: 24 }}
+          style={{ color: lightTheme.accent, fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginBottom: 24 }}
         >
           ← Voltar
         </Link>
 
         <div style={{
-          background: 'rgba(255,255,255,0.04)',
-          border: '0.5px solid rgba(150,100,255,0.18)',
+          background: lightTheme.cardBg,
+          border: '1px solid ' + lightTheme.cardBorder,
+          boxShadow: '0 8px 32px rgba(17,17,17,0.08)',
           borderRadius: 16,
           padding: 24,
           display: 'flex',
@@ -95,16 +97,16 @@ export default async function ProdutoPage(
               />
             </div>
           ) : (
-            <div style={{ width: 200, height: 200, borderRadius: 12, background: 'rgba(124,58,237,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>
+            <div style={{ width: 200, height: 200, borderRadius: 12, background: '#EFEDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>
               🛍️
             </div>
           )}
 
-          <h1 style={{ color: '#ffffff', fontSize: 17, fontWeight: 600, lineHeight: 1.4, margin: 0, textAlign: 'center' }}>
+          <h1 style={{ color: lightTheme.textPrimary, fontSize: 17, fontWeight: 600, lineHeight: 1.4, margin: 0, textAlign: 'center' }}>
             {product.name}
           </h1>
 
-          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.5, margin: 0, textAlign: 'center' }}>
+          <p style={{ color: lightTheme.textSecondary, fontSize: 13, lineHeight: 1.5, margin: 0, textAlign: 'center' }}>
             Você está em um ambiente de afiliados. Ao continuar, você será redirecionado para a loja parceira — o preço final e a disponibilidade são definidos por ela.
           </p>
 
@@ -152,7 +154,7 @@ export default async function ProdutoPage(
             </a>
           )}
 
-          <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, margin: 0, textAlign: 'center' }}>
+          <p style={{ color: lightTheme.textMuted, fontSize: 11, margin: 0, textAlign: 'center' }}>
             Redirecionamento via oviniciusgodoy.vercel.app
           </p>
 
