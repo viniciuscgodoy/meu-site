@@ -10,8 +10,6 @@ import ProductSkeleton from './ProductSkeleton'
 const PLATFORMS = ['Todas', 'Mercado Livre', 'Shopee', 'Amazon']
 const SORT_OPTIONS = [
   { value: 'recentes', label: 'Mais recentes' },
-  { value: 'menor',    label: 'Menor preço'   },
-  { value: 'maior',    label: 'Maior preço'   },
 ]
 
 function FilterBtn({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
@@ -68,8 +66,6 @@ export default function ProdutosClient() {
     let result = [...products]
     if (platform !== 'Todas') result = result.filter(p => p.platform === platform)
     if (category !== 'Todas') result = result.filter(p => p.category === category)
-    if (sort === 'menor') result.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity))
-    if (sort === 'maior') result.sort((a, b) => (b.price ?? -Infinity) - (a.price ?? -Infinity))
     return result
   }, [products, platform, category, sort])
 

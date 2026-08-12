@@ -130,7 +130,17 @@ function detectCategory(html: string, name: string, jsonLdCategory?: string): Ca
   return mapToCategory(name)
 }
 
+function isAuthorized(req: NextRequest) {
+  const received = (req.headers.get('x-admin-password') ?? '').replace(/﻿/g, '').trim()
+  const expected = (process.env.ADMIN_PASSWORD ?? '').replace(/﻿/g, '').trim()
+  return received === expected
+}
+
 export async function POST(req: NextRequest) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   const { url } = await req.json()
   if (!url) return NextResponse.json({ error: 'URL obrigatória' }, { status: 400 })
 

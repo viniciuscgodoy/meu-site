@@ -143,7 +143,7 @@ export default function AdminPage() {
     try {
       const res = await fetch('/api/scrape', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
         body: JSON.stringify({ url: form.affiliate_link }),
       })
       const data = await res.json()

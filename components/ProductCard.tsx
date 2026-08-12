@@ -12,13 +12,7 @@ const PLATFORM_TEXT: Record<string, string> = {
   'Amazon':        '#fbbf24',
 }
 
-function isPriceStale(dateStr: string | null): boolean {
-  if (!dateStr) return false
-  return Date.now() - new Date(dateStr).getTime() > 7 * 24 * 60 * 60 * 1000
-}
-
 export default function ProductCard({ product }: { product: Product }) {
-  const stale = isPriceStale(product.price_updated_at ?? null)
   const platBg   = PLATFORM_COLORS[product.platform] ?? 'rgba(124,58,237,0.12)'
   const platText = PLATFORM_TEXT[product.platform]  ?? '#a78bfa'
 
@@ -54,19 +48,6 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         )}
 
-        {/* Badge preço — top right */}
-        {product.price != null && (
-          <span style={{
-            position: 'absolute', top: 8, right: 8,
-            background: 'rgba(8,6,15,0.85)', backdropFilter: 'blur(8px)',
-            border: '0.5px solid rgba(167,139,250,0.3)',
-            borderRadius: 8, padding: '3px 8px',
-            color: '#a78bfa', fontWeight: 600, fontSize: 12,
-            lineHeight: 1.4,
-          }}>
-            R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
-        )}
       </div>
 
       {/* Corpo */}
@@ -84,13 +65,6 @@ export default function ProductCard({ product }: { product: Product }) {
         }}>
           {product.platform}
         </span>
-
-        {/* Aviso de preço desatualizado */}
-        {stale && product.price != null && (
-          <span style={{ fontSize: 10, color: '#fbbf24' }}>
-            ⚠️ preço pode ter mudado
-          </span>
-        )}
 
         <a
           href={product.affiliate_link}
