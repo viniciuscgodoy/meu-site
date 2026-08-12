@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import type { Product } from '@/lib/supabase'
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -66,15 +67,13 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.platform}
         </span>
 
-        <a
-          href={product.affiliate_link}
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href={`/produto/${product.slug || product.id}`}
           className="product-btn-v2"
           style={{ marginTop: 'auto' }}
         >
           Ver oferta →
-        </a>
+        </Link>
       </div>
     </div>
   )
