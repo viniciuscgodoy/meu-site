@@ -20,4 +20,7 @@ export type Product = {
   active: boolean
   created_at: string
   price_updated_at: string | null
+  slug: string | null
+  secondary_platform: 'Mercado Livre' | 'Shopee' | 'Amazon' | null
+  secondary_link: string | null
 }

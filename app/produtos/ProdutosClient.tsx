@@ -163,7 +163,7 @@ export default function ProdutosClient() {
               Produtos em Promoção 🛍️
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, marginTop: 6, marginBottom: 0 }}>
-              Seleção com os melhores preços e links de afiliado
+              Seleção com os melhores produtos e links de afiliado
             </p>
           </div>
           {!loading && (

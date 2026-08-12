@@ -1,3 +1,9 @@
+export const platformColors: Record<string, { bg: string; text: string }> = {
+  'Shopee':        { bg: '#EE4D2D', text: '#FFFFFF' },
+  'Mercado Livre': { bg: '#FFE600', text: '#2D3277' },
+  'Amazon':        { bg: '#FF9900', text: '#131921' },
+}
+
 export const tokens = {
   colors: {
     bg: '#08060f',

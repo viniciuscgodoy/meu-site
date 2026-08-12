@@ -5,6 +5,17 @@ import type { Product } from '@/lib/supabase'
 
 const PLATFORMS = ['Mercado Livre', 'Shopee', 'Amazon']
 
+function toSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
 function Toast({ message, onDone }: { message: string; onDone: () => void }) {
   const [hiding, setHiding] = useState(false)
   useEffect(() => {
@@ -22,6 +33,8 @@ const emptyForm = {
   affiliate_link: '',
   platform: 'Mercado Livre',
   category: '',
+  secondary_platform: '',
+  secondary_link: '',
 }
 
 export default function AdminPage() {
@@ -86,6 +99,9 @@ export default function AdminPage() {
         ...form,
         price: !isNaN(parsedPrice as number) ? parsedPrice : null,
         price_updated_at: parsedPrice ? new Date().toISOString() : null,
+        secondary_platform: form.secondary_platform || null,
+        secondary_link: form.secondary_link || null,
+        slug: form.name ? toSlug(form.name) : '',
       }
       const res = await fetch('/api/products', {
         method: 'POST',
@@ -278,6 +294,28 @@ export default function AdminPage() {
               />
             </div>
 
+            {/* Segunda plataforma + segundo link */}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <select
+                className="admin-input"
+                value={form.secondary_platform}
+                onChange={set('secondary_platform')}
+                style={{ flex: '0 0 160px' }}
+              >
+                <option value="">2ª plataforma</option>
+                {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <input
+                className="admin-input"
+                type="text"
+                placeholder="Segundo link de afiliado"
+                value={form.secondary_link}
+                onChange={set('secondary_link')}
+                disabled={!form.secondary_platform}
+                style={{ flex: 1, opacity: form.secondary_platform ? 1 : 0.4 }}
+              />
+            </div>
+
             {/* Categoria — preenchida automaticamente pelo scrape, editável */}
             <div style={{ position: 'relative' }}>
               <input
@@ -295,6 +333,27 @@ export default function AdminPage() {
                   borderRadius: 20, padding: '2px 8px', pointerEvents: 'none',
                 }}>
                   detectado
+                </span>
+              )}
+            </div>
+
+            {/* Slug — somente leitura, gerado a partir do nome */}
+            <div style={{ position: 'relative' }}>
+              <input
+                className="admin-input"
+                type="text"
+                placeholder="Slug (gerado automaticamente)"
+                value={form.name ? toSlug(form.name) : ''}
+                readOnly
+                style={{ opacity: 0.55, cursor: 'default', fontSize: 12 }}
+              />
+              {form.name && (
+                <span style={{
+                  position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+                  fontSize: 10, fontWeight: 600, color: 'rgba(167,139,250,0.6)',
+                  pointerEvents: 'none',
+                }}>
+                  auto
                 </span>
               )}
             </div>
