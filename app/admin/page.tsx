@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { Product } from '@/lib/supabase'
 
 const PLATFORMS = ['Mercado Livre', 'Shopee', 'Amazon']
+const ALL_PLATFORMS = ['Todas', ...PLATFORMS]
 
 function toSlug(name: string): string {
   return name
@@ -28,7 +29,6 @@ function Toast({ message, onDone }: { message: string; onDone: () => void }) {
 
 const emptyForm = {
   name: '',
-  price: '',
   image_url: '',
   affiliate_link: '',
   platform: 'Mercado Livre',
@@ -47,6 +47,9 @@ export default function AdminPage() {
   const [buscando, setBuscando] = useState(false)
   const [products, setProducts] = useState<Product[]>([])
   const [toast, setToast] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [filterPlatform, setFilterPlatform] = useState('Todas')
 
   const getPassword = () => {
     const raw = sessionStorage.getItem('admin_pw') ?? ''
@@ -94,27 +97,51 @@ export default function AdminPage() {
     e.preventDefault()
     setSalvando(true)
     try {
-      const parsedPrice = form.price ? parseFloat(form.price.replace(',', '.')) : null
-      const payload = {
-        ...form,
-        price: !isNaN(parsedPrice as number) ? parsedPrice : null,
-        price_updated_at: parsedPrice ? new Date().toISOString() : null,
-        secondary_platform: form.secondary_platform || null,
-        secondary_link: form.secondary_link || null,
-        slug: form.name ? toSlug(form.name) : '',
-      }
-      const res = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
-        body: JSON.stringify(payload),
-      })
-      if (res.ok) {
-        setForm(emptyForm)
-        setToast('Produto adicionado com sucesso ✓')
-        fetchProducts()
+      if (editingId) {
+        const res = await fetch('/api/products', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+          body: JSON.stringify({
+            id: editingId,
+            name: form.name,
+            image_url: form.image_url || null,
+            affiliate_link: form.affiliate_link,
+            platform: form.platform,
+            category: form.category || null,
+            secondary_platform: form.secondary_platform || null,
+            secondary_link: form.secondary_link || null,
+            slug: form.name ? toSlug(form.name) : '',
+          }),
+        })
+        if (res.ok) {
+          setForm(emptyForm)
+          setEditingId(null)
+          setToast('Produto atualizado com sucesso ✓')
+          fetchProducts()
+        } else {
+          const err = await res.json()
+          setToast(err.error || 'Erro ao atualizar')
+        }
       } else {
-        const err = await res.json()
-        setToast(err.error || 'Erro ao salvar')
+        const payload = {
+          ...form,
+          secondary_platform: form.secondary_platform || null,
+          secondary_link: form.secondary_link || null,
+          slug: form.name ? toSlug(form.name) : '',
+        }
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
+          body: JSON.stringify(payload),
+        })
+        if (res.ok) {
+          setForm(emptyForm)
+          setToast('Produto adicionado com sucesso ✓')
+          fetchProducts()
+        } else {
+          const err = await res.json()
+          setToast(err.error || 'Erro ao salvar')
+        }
       }
     } catch {
       setToast('Erro de conexão ao salvar')
@@ -144,6 +171,7 @@ export default function AdminPage() {
         headers: { 'Content-Type': 'application/json', 'x-admin-password': getPassword() },
         body: JSON.stringify({ id }),
       })
+      if (editingId === id) { setEditingId(null); setForm(emptyForm) }
       fetchProducts()
     } catch {
       setToast('Erro ao remover produto')
@@ -164,12 +192,10 @@ export default function AdminPage() {
       })
       const data = await res.json()
       if (data.error) { setToast('Não foi possível buscar o produto'); return }
-
       setForm(prev => ({
         ...prev,
         name:      data.name      || prev.name,
         image_url: data.image_url || prev.image_url,
-        price:     data.price != null ? String(data.price) : prev.price,
         category:  data.category  || prev.category,
         platform:  data.platform  || prev.platform,
       }))
@@ -179,6 +205,16 @@ export default function AdminPage() {
       setBuscando(false)
     }
   }
+
+  const stats = {
+    total: products.length,
+    active: products.filter(p => p.active).length,
+    byPlatform: PLATFORMS.map(pl => ({ platform: pl, count: products.filter(p => p.platform === pl).length })),
+  }
+
+  const filteredProducts = products
+    .filter(p => search === '' || p.name.toLowerCase().includes(search.toLowerCase()))
+    .filter(p => filterPlatform === 'Todas' || p.platform === filterPlatform)
 
   /* ── TELA DE LOGIN ── */
   if (!autenticado) {
@@ -246,7 +282,9 @@ export default function AdminPage() {
 
         {/* Formulário */}
         <div style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(150,100,255,0.18)', borderRadius: 14, padding: '20px', marginBottom: 28 }}>
-          <h2 style={{ color: '#ffffff', fontSize: 15, fontWeight: 600, margin: '0 0 16px' }}>Adicionar produto</h2>
+          <h2 style={{ color: '#ffffff', fontSize: 15, fontWeight: 600, margin: '0 0 16px' }}>
+            {editingId ? 'Editar produto' : 'Adicionar produto'}
+          </h2>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
@@ -279,20 +317,10 @@ export default function AdminPage() {
               required
             />
 
-            {/* Plataforma + Preço */}
-            <div style={{ display: 'flex', gap: 8 }}>
-              <select className="admin-input" value={form.platform} onChange={set('platform')} style={{ flex: 1 }}>
-                {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-              <input
-                className="admin-input"
-                type="text"
-                placeholder="Preço (R$)"
-                value={form.price}
-                onChange={set('price')}
-                style={{ width: 120, flexShrink: 0 }}
-              />
-            </div>
+            {/* Plataforma */}
+            <select className="admin-input" value={form.platform} onChange={set('platform')}>
+              {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
+            </select>
 
             {/* Segunda plataforma + segundo link */}
             <div style={{ display: 'flex', gap: 8 }}>
@@ -316,7 +344,7 @@ export default function AdminPage() {
               />
             </div>
 
-            {/* Categoria — preenchida automaticamente pelo scrape, editável */}
+            {/* Categoria */}
             <div style={{ position: 'relative' }}>
               <input
                 className="admin-input"
@@ -337,7 +365,7 @@ export default function AdminPage() {
               )}
             </div>
 
-            {/* Slug — somente leitura, gerado a partir do nome */}
+            {/* Slug — somente leitura */}
             <div style={{ position: 'relative' }}>
               <input
                 className="admin-input"
@@ -370,15 +398,28 @@ export default function AdminPage() {
               <img src={form.image_url} alt="Preview" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8, border: '0.5px solid rgba(150,100,255,0.2)' }} />
             )}
 
-            <button
-              type="submit"
-              disabled={salvando}
-              style={{ background: 'linear-gradient(135deg, #7c3aed, #2563eb)', color: '#ffffff', border: 'none', borderRadius: 10, padding: 12, fontWeight: 500, fontSize: 14, cursor: salvando ? 'not-allowed' : 'pointer', opacity: salvando ? 0.6 : 1, marginTop: 4, transition: 'opacity 0.2s' }}
-              onMouseOver={e => { if (!salvando) e.currentTarget.style.opacity = '0.9' }}
-              onMouseOut={e => { if (!salvando) e.currentTarget.style.opacity = '1' }}
-            >
-              {salvando ? 'Salvando...' : 'Adicionar produto'}
-            </button>
+            <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+              <button
+                type="submit"
+                disabled={salvando}
+                style={{ flex: 1, background: 'linear-gradient(135deg, #7c3aed, #2563eb)', color: '#ffffff', border: 'none', borderRadius: 10, padding: 12, fontWeight: 500, fontSize: 14, cursor: salvando ? 'not-allowed' : 'pointer', opacity: salvando ? 0.6 : 1, transition: 'opacity 0.2s' }}
+                onMouseOver={e => { if (!salvando) e.currentTarget.style.opacity = '0.9' }}
+                onMouseOut={e => { if (!salvando) e.currentTarget.style.opacity = '1' }}
+              >
+                {salvando ? 'Salvando...' : editingId ? 'Salvar alterações' : 'Adicionar produto'}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={() => { setEditingId(null); setForm(emptyForm) }}
+                  style={{ background: 'rgba(255,255,255,0.06)', border: '0.5px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontSize: 14, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', transition: 'background 0.2s' }}
+                  onMouseOver={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+                  onMouseOut={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                >
+                  Cancelar
+                </button>
+              )}
+            </div>
           </form>
         </div>
 
@@ -388,12 +429,74 @@ export default function AdminPage() {
             Produtos cadastrados <span style={{ color: 'rgba(167,139,250,0.6)', fontWeight: 400, fontSize: 13 }}>({products.length})</span>
           </h2>
 
+          {/* Estatísticas */}
+          {products.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+              <div style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(150,100,255,0.15)', borderRadius: 10, padding: '8px 14px', fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
+                <span style={{ fontWeight: 600, color: '#fff' }}>{stats.total}</span> produtos
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(150,100,255,0.15)', borderRadius: 10, padding: '8px 14px', fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
+                <span style={{ fontWeight: 600, color: '#4ade80' }}>{stats.active}</span> ativos
+              </div>
+              {stats.byPlatform.filter(b => b.count > 0).map(b => (
+                <div key={b.platform} style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(150,100,255,0.15)', borderRadius: 10, padding: '8px 14px', fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
+                  {b.platform}: <span style={{ fontWeight: 600, color: '#fff' }}>{b.count}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Busca + filtro de plataforma */}
+          {products.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+              <input
+                className="admin-input"
+                type="text"
+                placeholder="Buscar produto..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {ALL_PLATFORMS.map(pl => (
+                  <button
+                    key={pl}
+                    onClick={() => setFilterPlatform(pl)}
+                    style={{
+                      padding: '5px 12px',
+                      borderRadius: 20,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      border: filterPlatform === pl ? '0.5px solid rgba(167,139,250,0.5)' : '0.5px solid rgba(150,100,255,0.15)',
+                      background: filterPlatform === pl ? 'rgba(124,58,237,0.25)' : 'rgba(255,255,255,0.04)',
+                      color: filterPlatform === pl ? '#a78bfa' : 'rgba(255,255,255,0.45)',
+                      transition: 'background 0.2s, border-color 0.2s, color 0.2s',
+                    }}
+                  >
+                    {pl}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {products.length === 0 ? (
             <p style={{ color: 'rgba(255,255,255,0.28)', fontSize: 13, textAlign: 'center', padding: '32px 0' }}>Nenhum produto cadastrado.</p>
+          ) : filteredProducts.length === 0 ? (
+            <p style={{ color: 'rgba(255,255,255,0.28)', fontSize: 13, textAlign: 'center', padding: '24px 0' }}>Nenhum produto encontrado com esse filtro.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {products.map(p => (
-                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(150,100,255,0.18)', borderRadius: 12, padding: '10px 14px' }}>
+              {filteredProducts.map(p => (
+                <div
+                  key={p.id}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    background: editingId === p.id ? 'rgba(124,58,237,0.08)' : 'rgba(255,255,255,0.04)',
+                    border: editingId === p.id ? '0.5px solid rgba(167,139,250,0.4)' : '0.5px solid rgba(150,100,255,0.18)',
+                    borderRadius: 12, padding: '10px 14px',
+                    transition: 'background 0.2s, border-color 0.2s',
+                  }}
+                >
                   {p.image_url && (
                     <img src={p.image_url} alt={p.name} style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
                   )}
@@ -401,9 +504,43 @@ export default function AdminPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ color: '#ffffff', fontSize: 13, fontWeight: 500, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</p>
                     <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, margin: '2px 0 0' }}>
-                      {p.platform}{p.category ? ` · ${p.category}` : ''}{p.price ? ` · R$ ${p.price.toFixed(2).replace('.', ',')}` : ''}
+                      {p.platform}{p.category ? ` · ${p.category}` : ''}
                     </p>
                   </div>
+
+                  <a
+                    href={`/produto/${p.slug || p.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Ver página do produto"
+                    style={{ color: 'rgba(167,139,250,0.6)', fontSize: 11, textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, transition: 'color 0.2s' }}
+                    onMouseOver={e => (e.currentTarget.style.color = '#a78bfa')}
+                    onMouseOut={e => (e.currentTarget.style.color = 'rgba(167,139,250,0.6)')}
+                  >
+                    Ver ↗
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      setEditingId(p.id)
+                      setForm({
+                        name: p.name,
+                        image_url: p.image_url || '',
+                        affiliate_link: p.affiliate_link,
+                        platform: p.platform,
+                        category: p.category || '',
+                        secondary_platform: p.secondary_platform || '',
+                        secondary_link: p.secondary_link || '',
+                      })
+                      window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }}
+                    title="Editar produto"
+                    style={{ background: 'rgba(124,58,237,0.1)', border: '0.5px solid rgba(124,58,237,0.3)', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', flexShrink: 0, color: '#a78bfa', fontSize: 12, fontWeight: 500, transition: 'background 0.2s' }}
+                    onMouseOver={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.22)')}
+                    onMouseOut={e => (e.currentTarget.style.background = 'rgba(124,58,237,0.1)')}
+                  >
+                    Editar
+                  </button>
 
                   <label className="toggle" title={p.active ? 'Ativo' : 'Inativo'}>
                     <input type="checkbox" checked={p.active} onChange={e => handleToggle(p.id, e.target.checked)} />
