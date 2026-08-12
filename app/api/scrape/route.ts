@@ -66,8 +66,8 @@ function mapToCategory(text: string): Category {
   return 'Outros'
 }
 
-function extractJsonLd(html: string): { category?: string; price?: number } {
-  const result: { category?: string; price?: number } = {}
+function extractJsonLd(html: string): { category?: string } {
+  const result: { category?: string } = {}
   const matches = html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)
 
   for (const match of matches) {
@@ -78,36 +78,10 @@ function extractJsonLd(html: string): { category?: string; price?: number } {
         if (typeof obj.category === 'string' && !result.category) {
           result.category = obj.category
         }
-        const offers = obj.offers as Record<string, unknown> | undefined
-        if (offers && !result.price) {
-          const raw = (Array.isArray(offers) ? offers[0]?.price : offers.price) as string | number | undefined
-          if (raw !== undefined) {
-            const num = parseFloat(String(raw).replace(',', '.'))
-            if (!isNaN(num) && num > 0) result.price = num
-          }
-        }
       }
     } catch { /* JSON inválido */ }
   }
   return result
-}
-
-function parsePrice(html: string): number | null {
-  const patterns = [
-    /"price":\s*"?([\d]+(?:[.,][\d]{1,2})?)"?/,
-    /itemprop=["']price["'][^>]*content=["']([\d.,]+)["']/i,
-    /R\$\s*([\d]{1,3}(?:[.][\d]{3})*(?:,[\d]{2})?)/,
-  ]
-  for (const pattern of patterns) {
-    const match = html.match(pattern)
-    if (match) {
-      // Formato BR: 1.299,90 → 1299.90
-      const raw = match[1].replace(/\./g, '').replace(',', '.')
-      const num = parseFloat(raw)
-      if (!isNaN(num) && num > 0 && num < 1_000_000) return num
-    }
-  }
-  return null
 }
 
 function detectCategory(html: string, name: string, jsonLdCategory?: string): Category {
@@ -181,10 +155,9 @@ export async function POST(req: NextRequest) {
     const name      = getMeta('og:title') || getMetaName('title') || getTitleTag()
     const image_url = getMeta('og:image') || getMetaName('thumbnail') || ''
     const jsonLd    = extractJsonLd(html)
-    const price     = jsonLd.price ?? parsePrice(html)
     const category  = detectCategory(html, name, jsonLd.category)
 
-    return NextResponse.json({ name, price, image_url, platform, category })
+    return NextResponse.json({ name, image_url, platform, category })
   } catch {
     return NextResponse.json({ error: 'Não foi possível obter informações do produto' }, { status: 500 })
   }

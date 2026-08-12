@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { name, image_url, affiliate_link, platform, category, price, price_updated_at, slug, secondary_platform, secondary_link } = body
+  const { name, image_url, affiliate_link, platform, category, slug, secondary_platform, secondary_link } = body
 
   if (!name || !affiliate_link) {
     return NextResponse.json({ error: 'Nome e link de afiliado são obrigatórios' }, { status: 400 })
@@ -71,8 +71,6 @@ export async function POST(req: NextRequest) {
       affiliate_link,
       platform: platform || 'Mercado Livre',
       category: category || null,
-      price: price ?? null,
-      price_updated_at: price_updated_at ?? null,
       slug: finalSlug,
       secondary_platform: secondary_platform || null,
       secondary_link: secondary_link || null,
@@ -91,11 +89,15 @@ export async function PATCH(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { id, active, name, slug, secondary_platform, secondary_link } = body
+  const { id, active, name, slug, secondary_platform, secondary_link, image_url, affiliate_link, platform, category } = body
 
   const updates: Record<string, unknown> = {}
   if (active !== undefined) updates.active = active
   if (name !== undefined) updates.name = name
+  if (image_url !== undefined) updates.image_url = image_url || null
+  if (affiliate_link !== undefined) updates.affiliate_link = affiliate_link
+  if (platform !== undefined) updates.platform = platform
+  if (category !== undefined) updates.category = category || null
   if (secondary_platform !== undefined) updates.secondary_platform = secondary_platform || null
   if (secondary_link !== undefined) updates.secondary_link = secondary_link || null
 

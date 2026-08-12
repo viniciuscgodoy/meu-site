@@ -12,14 +12,12 @@ export function createServiceClient() {
 export type Product = {
   id: string
   name: string
-  price: number | null
   image_url: string | null
   affiliate_link: string
   platform: 'Mercado Livre' | 'Shopee' | 'Amazon' | string
   category: string | null
   active: boolean
   created_at: string
-  price_updated_at: string | null
   slug: string | null
   secondary_platform: 'Mercado Livre' | 'Shopee' | 'Amazon' | null
   secondary_link: string | null
