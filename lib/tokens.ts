@@ -33,4 +33,10 @@ export const lightTheme = {
   accent: '#7C3AED',
   accentBg: '#EDE6FE',
   accentBorder: '#C9B8FA',
+  glassBg: 'rgba(255,255,255,0.6)',
+  glassBorder: 'rgba(255,255,255,0.7)',
+  glassShadow: '0 8px 40px rgba(17,17,17,0.07)',
+  orbPurple: 'rgba(124,58,237,0.10)',
+  orbBlue: 'rgba(37,99,235,0.08)',
+  orbLilac: 'rgba(167,139,250,0.07)',
 }

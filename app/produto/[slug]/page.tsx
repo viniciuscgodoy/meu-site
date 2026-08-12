@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 import { platformColors, lightTheme } from '@/lib/tokens'
 import type { Product } from '@/lib/supabase'
+import LightOrbBackground from '@/components/LightOrbBackground'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -63,7 +64,7 @@ export default async function ProdutoPage(
 
   return (
     <main style={{ minHeight: '100vh', padding: '2.5rem 1.25rem', position: 'relative', zIndex: 2 }}>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, background: lightTheme.bg }} />
+      <LightOrbBackground />
       <div style={{ maxWidth: 480, margin: '0 auto', position: 'relative', zIndex: 2 }}>
 
         <Link
