@@ -42,7 +42,7 @@ export default function OgImage() {
             Vinícius Godoy
           </span>
           <span style={{ fontSize: 22, color: 'rgba(255,255,255,0.45)' }}>
-            Analista de Dados · Empreendedor Digital · Afiliado ML &amp; Shopee
+            Empreendedor Digital e Curadoria de Ofertas
           </span>
         </div>
       </div>

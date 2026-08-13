@@ -17,10 +17,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://oviniciusgodoy.vercel.app'),
   title: "Vinicius Godoy",
-  description: "Analista de Dados · Empreendedor Digital",
+  description: "Empreendedor Digital e Curadoria de Ofertas",
   openGraph: {
     title: "Vinicius Godoy",
-    description: "Analista de Dados · Empreendedor Digital",
+    description: "Empreendedor Digital e Curadoria de Ofertas",
     url: '/',
     siteName: 'Vinícius Godoy',
     locale: 'pt_BR',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "Vinicius Godoy",
-    description: "Analista de Dados · Empreendedor Digital",
+    description: "Empreendedor Digital e Curadoria de Ofertas",
   },
 };
 

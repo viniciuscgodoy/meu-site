@@ -30,15 +30,6 @@ function IconShopping() {
   )
 }
 
-function IconChart() {
-  return (
-    <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(37,99,235,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
-      </svg>
-    </div>
-  )
-}
 
 function IconInstagram() {
   return (
@@ -92,7 +83,7 @@ export default function Home() {
               @oviniciusgodoy
             </p>
             <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, marginTop: 6, lineHeight: 1.5 }}>
-              Analista de Dados · Empreendedor Digital · Afiliado ML &amp; Shopee
+              Empreendedor Digital e Curadoria de Ofertas
             </p>
           </div>
         </div>
@@ -136,13 +127,6 @@ export default function Home() {
             href="https://www.mercadolivre.com.br/social/govi3580951"
             external
             delay={360}
-          />
-          <LinkCard
-            icon={<IconChart />}
-            title="Portfólio & Projetos"
-            description="Análises de dados e automações"
-            href="/portfolio"
-            delay={440}
           />
         </div>
 
