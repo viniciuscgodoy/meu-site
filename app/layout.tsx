@@ -14,8 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://oviniciusgodoy.vercel.app'),
   title: "Vinicius Godoy",
   description: "Analista de Dados · Empreendedor Digital",
+  openGraph: {
+    title: "Vinicius Godoy",
+    description: "Analista de Dados · Empreendedor Digital",
+    url: '/',
+    siteName: 'Vinícius Godoy',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Vinicius Godoy",
+    description: "Analista de Dados · Empreendedor Digital",
+  },
 };
 
 export default function RootLayout({

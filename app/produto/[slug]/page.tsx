@@ -38,8 +38,17 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { slug } = await params
   const product = await getProduct(slug)
+  if (!product) return { title: 'Produto não encontrado' }
+
+  const title = `${product.name} — oviniciusgodoy`
+  const description = `${product.name} — oferta via ${product.platform}. Confira na loja parceira.`
+  const images = product.image_url ? [product.image_url] : undefined
+
   return {
-    title: product ? `${product.name} — oviniciusgodoy` : 'Produto não encontrado',
+    title,
+    description,
+    openGraph: { title, description, images },
+    twitter: { card: 'summary_large_image', title, description, images },
   }
 }
 

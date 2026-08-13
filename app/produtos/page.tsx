@@ -1,4 +1,10 @@
+import type { Metadata } from 'next'
 import ProdutosClient from './ProdutosClient'
+
+export const metadata: Metadata = {
+  title: 'Produtos em Promoção — Vinícius Godoy',
+  description: 'Seleção com os melhores produtos e links de afiliado.',
+}
 import { lightTheme } from '@/lib/tokens'
 import LightOrbBackground from '@/components/LightOrbBackground'
 
