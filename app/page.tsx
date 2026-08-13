@@ -60,8 +60,8 @@ export default function Home() {
         {/* Hero */}
         <div className="fade-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, marginBottom: 32, animationDelay: '0ms' }}>
           <div style={{
-            width: 72,
-            height: 72,
+            width: 100,
+            height: 100,
             borderRadius: '50%',
             overflow: 'hidden',
             position: 'relative',
@@ -74,7 +74,7 @@ export default function Home() {
               alt="Vinícius Godoy"
               fill
               style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
-              sizes="72px"
+              sizes="100px"
             />
           </div>
 
