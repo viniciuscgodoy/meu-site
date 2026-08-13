@@ -116,7 +116,7 @@ export default function Home() {
           <LinkCard
             icon={<IconTag />}
             title="Produtos em Promoção"
-            description="Curadoria com os melhores preços"
+            description="Curadoria com os melhores produtos"
             href="/produtos"
             badge="novo"
             delay={200}
