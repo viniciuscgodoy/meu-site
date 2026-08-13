@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { Product } from '@/lib/supabase'
 import { platformColors } from '@/lib/tokens'
+import { track } from '@vercel/analytics'
 
 const PLATFORM_COLORS: Record<string, string> = {
   'Mercado Livre': 'rgba(234,179,8,0.15)',
@@ -75,6 +76,7 @@ export default function ProductCard({ product }: { product: Product }) {
             href={`/produto/${product.slug || product.id}`}
             className="product-btn-v2"
             style={{ marginTop: 'auto', background: cta.bg, color: cta.text }}
+            onClick={() => track('click_produto', { produto: product.name, plataforma: product.platform, tipo: 'pagina_intermediaria' })}
           >
             Ver oferta →
           </Link>
@@ -85,6 +87,7 @@ export default function ProductCard({ product }: { product: Product }) {
             rel="noopener noreferrer sponsored"
             className="product-btn-v2"
             style={{ marginTop: 'auto', background: cta.bg, color: cta.text }}
+            onClick={() => track('click_produto', { produto: product.name, plataforma: product.platform, tipo: 'direto' })}
           >
             Ver oferta →
           </a>

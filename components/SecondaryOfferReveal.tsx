@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { track } from '@vercel/analytics'
 
 export default function SecondaryOfferReveal({
   platform, link, bg, text, label,
@@ -31,6 +32,7 @@ export default function SecondaryOfferReveal({
       target="_blank"
       rel="noopener noreferrer sponsored"
       className="fade-up"
+      onClick={() => track('click_produto_secundario', { plataforma: platform })}
       style={{
         display: 'block', width: '100%', padding: '12px 0', borderRadius: 10,
         textAlign: 'center', fontWeight: 600, fontSize: 14, textDecoration: 'none',

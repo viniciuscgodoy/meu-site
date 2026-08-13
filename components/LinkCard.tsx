@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link'
+import { track } from '@vercel/analytics'
 
 type LinkCardProps = {
   icon: React.ReactNode
@@ -22,6 +24,7 @@ export default function LinkCard({ icon, title, description, href, external, bad
       {...(extraProps as any)}
       className="link-card fade-up"
       style={{ animationDelay: `${delay}ms` }}
+      onClick={() => track('click_link_home', { titulo: title, destino: href })}
     >
       <div style={{ flexShrink: 0 }}>{icon}</div>
 
