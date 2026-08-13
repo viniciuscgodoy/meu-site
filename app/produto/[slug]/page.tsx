@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { platformColors, lightTheme } from '@/lib/tokens'
 import type { Product } from '@/lib/supabase'
 import LightOrbBackground from '@/components/LightOrbBackground'
+import SecondaryOfferReveal from '@/components/SecondaryOfferReveal'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -133,26 +134,13 @@ export default async function ProdutoPage(
           </a>
 
           {product.secondary_platform && product.secondary_link && secColor && (
-            <a
-              href={product.secondary_link}
-              target="_blank"
-              rel="noopener noreferrer sponsored"
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '12px 0',
-                borderRadius: 10,
-                textAlign: 'center',
-                fontWeight: 600,
-                fontSize: 14,
-                textDecoration: 'none',
-                background: secColor.bg,
-                color: secColor.text,
-                boxSizing: 'border-box',
-              }}
-            >
-              {buyLabel(product.secondary_platform)}
-            </a>
+            <SecondaryOfferReveal
+              platform={product.secondary_platform}
+              link={product.secondary_link}
+              bg={secColor.bg}
+              text={secColor.text}
+              label={buyLabel(product.secondary_platform)}
+            />
           )}
 
           <p style={{ color: lightTheme.textMuted, fontSize: 11, margin: 0, textAlign: 'center' }}>
