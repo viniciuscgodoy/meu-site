@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import LinkCard from '@/components/LinkCard'
 
 function IconTag() {
@@ -62,17 +63,19 @@ export default function Home() {
             width: 72,
             height: 72,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #7c3aed, #2563eb)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 22,
-            fontWeight: 600,
-            color: '#ffffff',
+            overflow: 'hidden',
+            position: 'relative',
             animation: 'float 4s ease-in-out infinite, pulseRing 4s ease-in-out infinite',
             flexShrink: 0,
+            border: '2px solid rgba(124,58,237,0.5)',
           }}>
-            VG
+            <Image
+              src="/avatar.png"
+              alt="Vinícius Godoy"
+              fill
+              style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
+              sizes="72px"
+            />
           </div>
 
           <div style={{ textAlign: 'center' }}>
